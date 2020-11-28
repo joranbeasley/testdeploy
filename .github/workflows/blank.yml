@@ -16,13 +16,15 @@ jobs:
     steps:
     - uses: actions/checkout@v2
       with:
-        ref: ${{ github.head_ref }}
+        fetch-depth: 2
+      
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
         python-version: '3.x'
     - name: Update Version
       run: |
+        echo ${{ github.event.release.target_commitish }}
         TAG=${GITHUB_REF##*/}
         echo ${{ github.head_ref }}
         sed -i "s/__version__=\".*\"/__version__=\"$TAG\"/" version.txt
