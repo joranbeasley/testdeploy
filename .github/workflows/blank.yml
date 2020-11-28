@@ -1,0 +1,29 @@
+# This workflows will upload a Python Package using Twine when a release is created
+# For more information see: https://help.github.com/en/actions/language-and-framework-guides/using-python-with-github-actions#publishing-to-package-registries
+
+name: Do A release
+
+on: 
+  release:
+    types: # This configuration does not affect the page_build event above
+      - created
+        
+jobs:
+  deploy:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+    - name: Update Version
+      run: |
+        TAG=${GITHUB_REF##*/}
+        echo $TAG
+        
+    - uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: Deploy Version ${{ github.event.inputs.name }} to PyPi.
