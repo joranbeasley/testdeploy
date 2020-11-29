@@ -19,7 +19,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout Source
+      uses: actions/checkout@v2
       with:
         ref: ${{ github.event.release.target_commitish }}
       
@@ -27,10 +28,12 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: '3.x'
+
     - name: Install dependencies
       run: |        
         python -m pip install --upgrade pip
         # pip install releasy
+        
     - name: Identify Version
       id: ident
       run: |
@@ -44,20 +47,25 @@ jobs:
           echo "::set-output name=IS_RELEASE::true"
         fi
         echo "::set-output name=VERSION::$TAG"
+        
     - name: Release Step
-      if: ${{ steps.ident-version-id.outputs.IS_RELEASE }}
+      if: ${{ steps.ident.outputs.IS_RELEASE }}
       run: |
         # echo "::error file="TEST",line=0,col=0::test error message"
         echo "RELEASING CURRENT BRANCH: ${{ github.event.release.target_commitish }}"
         echo ${{ github.head_ref }}
         sed -i "s/__version__=\".*\"/__version__=\"$TAG\"/" version.txt
+        echo "::warning file="TEST",line=0,col=0::DEPLOYED AND RELEASED: ${{ steps.ident.outputs.VERSION }}\nRAN FROM RELEASE"
+        
     - name: Test Release Step
-      if: ${{ steps.ident-version-id.outputs.IS_TEST }}
+      if: ${{ steps.ident.outputs.IS_TEST }}
       run: |
         # echo "::error file="TEST",line=0,col=0::test error message"
         echo "TESTING CURRENT BRANCH: ${{ github.event.release.target_commitish }}"
+        echo "::error file="TEST",line=0,col=0::Test Release(NO DEPLOY!): ${{ steps.ident.outputs.VERSION }}\nRAN FROM PUSH BUTTON "
         echo ${{ github.head_ref }}
         sed -i "s/__version__=\".*\"/__version__=\"$TAG\"/" version.txt  
+        
     - name: Recommit Version File
       run: |
         echo "Updating VERSION:${{ steps.ident.outputs.VERSION }}"
