@@ -32,17 +32,15 @@ jobs:
         python -m pip install --upgrade pip
         # pip install releasy
     - name: Identify Version
-      id: ident-version
+      id: ident
       run: |
         TAG=${GITHUB_REF##*/}
         if ! [[ "${{ github.event.inputs.version }}" == "" ]]; then
           TAG=${{ github.event.inputs.version }};
           echo "Push Button Test Deploy:$TAG";
           echo "::set-output name=IS_TEST::true"
-          echo "::set-output name=IS_RELEASE::"
         else
           echo "Release Deploy:$TAG"
-          echo "::set-output name=IS_TEST::" 
           echo "::set-output name=IS_RELEASE::true"
         fi
         echo "::set-output name=VERSION::$TAG"
@@ -62,7 +60,7 @@ jobs:
         sed -i "s/__version__=\".*\"/__version__=\"$TAG\"/" version.txt  
     - name: Recommit Version File
       run: |
-        echo "Updating VERSION:${{ steps.ident-version-id.outputs.VERSION }}"
+        echo "Updating VERSION:${{ steps.ident.outputs.VERSION }}"
        
         
  
