@@ -37,13 +37,11 @@ jobs:
         if ! [[ "${{ github.event.inputs.version }}" == "" ]]; then
           TAG=${{ github.event.inputs.version }};
           echo "Push Button Test Deploy:$TAG";
-          # this is used for branching and control later
           echo "::set-output name=IS_TEST::true"
           echo "::set-output name=IS_RELEASE::"
         else
           echo "Release Deploy:$TAG"
-          #this is used for branching and control later
-          echo "::set-output name=IS_TEST::"
+          echo "::set-output name=IS_TEST::" 
           echo "::set-output name=IS_RELEASE::true"
         fi
         echo "::set-output name=VERSION::$TAG"
