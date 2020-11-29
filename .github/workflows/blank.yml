@@ -61,9 +61,8 @@ jobs:
         echo ${{ github.head_ref }}
         sed -i "s/__version__=\".*\"/__version__=\"$TAG\"/" version.txt  
     - name: Recommit Version File
+      run: |
         echo "Updating VERSION:${{ steps.ident-version-id.outputs.VERSION }}"
        
         
-    - name: Cleanup and Commit
-      run: |
-        echo ${{ }}
+ 
