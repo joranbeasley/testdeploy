@@ -37,25 +37,29 @@ jobs:
     - name: Identify Version
       id: ident
       run: |
-        TAG=${GITHUB_REF##*/}
-        if ! [[ "${{ github.event.inputs.version }}" == "" ]]; then
-          TAG=${{ github.event.inputs.version }};
-          echo "Push Button Test Deploy:$TAG";
-          echo "::set-output name=IS_TEST::true"
+        TAG=${GITHUB_REF##*/} 
+        if [[ "${{ github.event.inputs.version }}" == "" ]]; then
+        # We are doin a triggered release !
+          echo "Release Deploy:$TAG";
+          echo "::set-output name=IS_RELEASE::true";          
         else
-          echo "Release Deploy:$TAG"
-          echo "::set-output name=IS_RELEASE::true"
+        # this is only a staging release!  
+          TAG=${{ github.event.inputs.version }};
+          echo "Push Button TEST Deploy:$TAG";
+          echo "::set-output name=IS_TEST::true"
         fi
+        if [[ 
         echo "::set-output name=VERSION::$TAG"
         
     - name: Release Step
       if: ${{ steps.ident.outputs.IS_RELEASE }}
       run: |
-        # echo "::error file="TEST",line=0,col=0::test error message"
+        
         echo "RELEASING CURRENT BRANCH: ${{ github.event.release.target_commitish }}"
         echo ${{ github.head_ref }}
         sed -i "s/__version__=\".*\"/__version__=\"$TAG\"/" version.txt
         echo "::warning file="TEST",line=0,col=0::DEPLOYED AND RELEASED: ${{ steps.ident.outputs.VERSION }}\nRAN FROM RELEASE"
+        #
         
     - name: Test Release Step
       if: ${{ steps.ident.outputs.IS_TEST }}
