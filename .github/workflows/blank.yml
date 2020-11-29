@@ -37,21 +37,25 @@ jobs:
         if ! [[ "${{ github.event.inputs.version }}" == "" ]]; then
           TAG=${{ github.event.inputs.version }};
           echo "Push Button Test Deploy:$TAG";
-          echo "::set-output name=TYPE::test"
+          # this is used for branching and control later
+          echo "::set-output name=IS_TEST::true"
+          echo "::set-output name=IS_RELEASE::"
         else
           echo "Release Deploy:$TAG"
-          echo "::set-output name=TYPE::release"
+          #this is used for branching and control later
+          echo "::set-output name=IS_TEST::"
+          echo "::set-output name=IS_RELEASE::true"
         fi
         echo "::set-output name=VERSION::$TAG"
     - name: Release Step
-      if: ${{ steps.ident-version-id.outputs.TYPE }}==release
+      if: ${{ steps.ident-version-id.outputs.IS_RELEASE }}
       run: |
         # echo "::error file="TEST",line=0,col=0::test error message"
         echo "RELEASING CURRENT BRANCH: ${{ github.event.release.target_commitish }}"
         echo ${{ github.head_ref }}
         sed -i "s/__version__=\".*\"/__version__=\"$TAG\"/" version.txt
     - name: Test Release Step
-      if: ${{ steps.ident-version-id.outputs.TYPE }}==test
+      if: ${{ steps.ident-version-id.outputs.IS_TEST }}
       run: |
         # echo "::error file="TEST",line=0,col=0::test error message"
         echo "TESTING CURRENT BRANCH: ${{ github.event.release.target_commitish }}"
