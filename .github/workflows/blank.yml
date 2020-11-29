@@ -24,6 +24,7 @@ jobs:
         python-version: '3.x'
     - name: Update Version
       run: |
+        echo "::set-output name=action_fruit::strawberry"
         echo ${{ github.event.release.target_commitish }}
         TAG=${GITHUB_REF##*/}
         echo ${{ github.head_ref }}
